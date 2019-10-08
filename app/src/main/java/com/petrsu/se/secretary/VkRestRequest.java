@@ -18,6 +18,11 @@ public class VkRestRequest extends AsyncTask<String, Void, Integer> {
         HttpsURLConnection vkConnection;
         long randomId = 0;
         String idString = "";
+        String messageToSend = "";
+
+        for(String part : args) {
+            messageToSend += part;
+        }
 
         Random idRandom = new Random(System.currentTimeMillis());
         randomId = idRandom.nextLong();
@@ -25,7 +30,7 @@ public class VkRestRequest extends AsyncTask<String, Void, Integer> {
 
         /* Что делать с ключом? При попытке взять его из strings пишет, что invalid */
         try {
-            vkApiUrl = new URL("https://api.vk.com/method/messages.send?peer_id=400989579&message=ццц х)" +
+            vkApiUrl = new URL("https://api.vk.com/method/messages.send?peer_id=2000000001&message=" + messageToSend +
                     "&access_token=" + new Token().token + "&v=5.101" +
                     "&random_id=" + idString);
             Log.d("VKTEST", "URL success");

@@ -67,13 +67,6 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CALL_PHONE }, 121);
         }
-        VkRestRequest vrr = new VkRestRequest(); // пробуем тупой пост-запрос
-        vrr.execute();
-        /*VK.initialize(this);
-        ArrayList<VKScope> scopes = new ArrayList<VKScope>();
-        scopes.add(VKScope.MESSAGES);
-        VK.setCredentials(this, 138569761, "f9fe9ed3100e140135bbb150b4db60c3fdbbc490db8aa20163d6d6c2abcb359d0e09a603e0538fdd7cf11", "test", true);
-        VK.login(this, scopes);*/
     }
 
     public void onClick(View view) {
@@ -98,32 +91,12 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        // проверка авторизации вк
-        /*if (!VK.onActivityResult(requestCode, resultCode, data, new VKAuthCallback() {
-            @Override
-            public void onLogin(@NotNull VKAccessToken vkAccessToken) {
-                Log.d("VKTEST", "Success");
-                VkRestRequest vrr = new VkRestRequest();
-                vrr.execute();
-            }
-
-            @Override
-            public void onLoginFailed(int i) {
-                Log.d("VKTEST", "Fail");
-            }
-        }))*/
         //проверяем результат распознавания речи
         if(requestCode == VR_REQUEST && resultCode == RESULT_OK)
         {
         //Добавляем распознанные слова в список результатов
             String suggestedCommand =
                     data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
-            /*String variants = "";
-            for (int i = 0; i < suggestedWords.size(); i++) {
-                variants += suggestedWords.get(i) + " ";
-            }*/
-            //Toast.makeText(this, "Вы сказали: " + suggestedCommand, Toast.LENGTH_LONG).show();
-            // разбиваем полученную фразу на слова и пробегаем по списку команд
             String[] commandParts = suggestedCommand.split(" ");
             if (!commandParts[0].equals("")) {
                if(commandParts[0].equalsIgnoreCase("позвони")) {
@@ -185,6 +158,16 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            } else Toast.makeText(this, "Вы не разрешили использовать телефонную книгу", Toast.LENGTH_LONG).show();
                        } else Toast.makeText(this, "Невозможно совершать звонки на этом устройстве", Toast.LENGTH_LONG).show();
                    } else Toast.makeText(this, "А кому звонить?", Toast.LENGTH_LONG).show();
+               } else if(commandParts[0].equalsIgnoreCase("отправь") && commandParts[1].equalsIgnoreCase("сообщение")) {
+                   String messageToSend = "";
+                   for(int i = 2; i < commandParts.length; i++) {
+                       messageToSend += commandParts[i] + " ";
+                   }
+                   if(messageToSend != "") {
+                       VkRestRequest vrr = new VkRestRequest();
+                       vrr.execute(messageToSend);
+                       Toast.makeText(this, "Сообщение " + messageToSend + " отправлено", Toast.LENGTH_LONG).show();
+                   } else Toast.makeText(this, "Сообщение пустое", Toast.LENGTH_LONG).show();
                }
             }
         }
