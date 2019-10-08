@@ -27,16 +27,15 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DialogActivity extends AppCompatActivity implements View.OnClickListener, TextToSpeech.OnInitListener {
+public class DialogActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int VR_REQUEST = 999;
     private int MY_DATA_CHECK_CODE = 0;
     private TextToSpeech repeatTTS;
     private Button speakButton;
     private boolean hasTelephony = false;
 
-    public void onInit(int initStatus){
-        if(initStatus == TextToSpeech.SUCCESS)
-            repeatTTS.setLanguage(new Locale("ru"));//Язык
+    public void speak(String text) {
+        repeatTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, String.valueOf(System.currentTimeMillis()));
     }
 
     @Override
@@ -57,6 +56,17 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
             speakButton.setEnabled(false);
             speakButton.setText("Распознавание речи не поддерживается на Вашем устройстве");
         }
+
+        repeatTTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override public void onInit(int initStatus) {
+                if(initStatus == TextToSpeech.SUCCESS) {
+                    repeatTTS.setPitch(1.7f);
+                    repeatTTS.setSpeechRate(1.0f);
+                    repeatTTS.setLanguage(new Locale("ru"));//Язык
+                }
+            }
+        });
+
         // проверка фишек
         PackageManager packageManager = getPackageManager();
         hasTelephony = packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
@@ -140,8 +150,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                                    }
                                                    contactFound = true;
                                                } else
-                                                   Toast.makeText(this, "У контакта нет номера", Toast.LENGTH_LONG).show();
-                                               Toast.makeText(this, "Найден контакт " + nameInBook + " с номером " + phoneNumber, Toast.LENGTH_LONG).show();
+                                                   speak("У контакта нет номера");
+                                               speak("Найден контакт " + nameInBook + " с номером " + phoneNumber);
                                                cursor.close();
                                                break;
                                            }
@@ -154,10 +164,10 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                            startActivity(intent);
                                        }
                                    }
-                               } else Toast.makeText(this, "Вы не разрешили звонить", Toast.LENGTH_LONG).show();
-                           } else Toast.makeText(this, "Вы не разрешили использовать телефонную книгу", Toast.LENGTH_LONG).show();
-                       } else Toast.makeText(this, "Невозможно совершать звонки на этом устройстве", Toast.LENGTH_LONG).show();
-                   } else Toast.makeText(this, "А кому звонить?", Toast.LENGTH_LONG).show();
+                               } else speak("Вы не разрешили звонить");
+                           } else speak("Вы не разрешили использовать телефонную книгу");
+                       } else speak("Невозможно совершать звонки на этом устройстве");
+                   } else speak( "Абонент не назван");
                } else if(commandParts[0].equalsIgnoreCase("отправь") && commandParts[1].equalsIgnoreCase("сообщение")) {
                    String messageToSend = "";
                    for(int i = 2; i < commandParts.length; i++) {
@@ -166,8 +176,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                    if(messageToSend != "") {
                        VkRestRequest vrr = new VkRestRequest();
                        vrr.execute(messageToSend);
-                       Toast.makeText(this, "Сообщение " + messageToSend + " отправлено", Toast.LENGTH_LONG).show();
-                   } else Toast.makeText(this, "Сообщение пустое", Toast.LENGTH_LONG).show();
+                       speak( "Сообщение " + messageToSend + " отправлено");
+                   } else speak("Сообщение пустое");
                }
             }
         }
