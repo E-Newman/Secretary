@@ -22,6 +22,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.vk.api.sdk.VK;
+import com.vk.api.sdk.auth.VKAccessToken;
+import com.vk.api.sdk.auth.VKAuthCallback;
+import com.vk.api.sdk.auth.VKScope;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -77,6 +85,11 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CALL_PHONE }, 121);
         }
+
+        // авторизуемся в вк для работы с документами
+        List<VKScope> scopes = new ArrayList<>();
+        scopes.add(VKScope.DOCS);
+        VK.login(this, scopes);
     }
 
     public void onClick(View view) {
@@ -101,6 +114,19 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        // проверим авторизацию вк
+        if(!VK.onActivityResult(requestCode, resultCode, data, new VKAuthCallback() {
+            @Override
+            public void onLogin(@NotNull VKAccessToken vkAccessToken) {
+                speak("Вы авторизованы ВКонтакте. Теперь можно работать с документами.");
+            }
+
+            @Override
+            public void onLoginFailed(int i) {
+                speak("Ошибка авторизации ВКонтакте, работа с документами недоступна.");
+            }
+        }))
+
         //проверяем результат распознавания речи
         if(requestCode == VR_REQUEST && resultCode == RESULT_OK)
         {
