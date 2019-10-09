@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +42,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
     private TextToSpeech repeatTTS;
     private Button speakButton;
     private boolean hasTelephony = false;
+    private String currentVkUserToken = ""; // токен текущей сессии для работы с пользовательскими методами api
 
     public void speak(String text) {
         repeatTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, String.valueOf(System.currentTimeMillis()));
@@ -68,7 +70,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         repeatTTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override public void onInit(int initStatus) {
                 if(initStatus == TextToSpeech.SUCCESS) {
-                    repeatTTS.setPitch(1.7f);
+                    repeatTTS.setPitch(1.3f);
                     repeatTTS.setSpeechRate(1.0f);
                     repeatTTS.setLanguage(new Locale("ru"));//Язык
                 }
@@ -118,6 +120,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         if(!VK.onActivityResult(requestCode, resultCode, data, new VKAuthCallback() {
             @Override
             public void onLogin(@NotNull VKAccessToken vkAccessToken) {
+                currentVkUserToken = vkAccessToken.getAccessToken(); // берём текущий токен для работы с документами от имени пользователя
                 speak("Вы авторизованы ВКонтакте. Теперь можно работать с документами.");
             }
 
@@ -176,7 +179,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                                    }
                                                    contactFound = true;
                                                } else
-                                                   speak("У контакта нет номера");
+                                                   speak("У контакта нет номера.");
                                                speak("Найден контакт " + nameInBook + " с номером " + phoneNumber);
                                                cursor.close();
                                                break;
@@ -200,10 +203,23 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        messageToSend += commandParts[i] + " ";
                    }
                    if(messageToSend != "") {
-                       VkRestRequest vrr = new VkRestRequest();
-                       vrr.execute(messageToSend);
-                       speak( "Сообщение " + messageToSend + " отправлено");
-                   } else speak("Сообщение пустое");
+                       VkMessageRequest vmr = new VkMessageRequest();
+                       vmr.execute(messageToSend);
+                       speak( "Сообщение " + messageToSend + " отправлено.");
+                   } else speak("Сообщение не задано.");
+               } else if(commandParts[0].equalsIgnoreCase("найди") && commandParts[1].equalsIgnoreCase("документ")) {
+                   String fileName = "";
+                   for(int i = 2; i < commandParts.length; i++) {
+                       fileName += commandParts[i] + " ";
+                   }
+                   if(fileName != "") {
+                       VkGetFileRequest vfr = new VkGetFileRequest();
+                       ArrayList<String> docArgs = new ArrayList<>();
+                       docArgs.add(fileName);
+                       docArgs.add(currentVkUserToken);
+                       vfr.execute(docArgs); // TODO: для асинков проверка кода возврата или типа того
+                       speak("Файл " + fileName + " найден, но не забудь скачать.");
+                   } else speak("Имя файла не задано.");
                }
             }
         }

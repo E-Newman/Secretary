@@ -11,7 +11,7 @@ import java.util.Random;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class VkRestRequest extends AsyncTask<String, Void, Integer> {
+public class VkMessageRequest extends AsyncTask<String, Void, Integer> {
     @Override
     protected Integer doInBackground(String... args) {
         URL vkApiUrl;
