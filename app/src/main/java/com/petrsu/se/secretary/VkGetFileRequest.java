@@ -3,6 +3,9 @@ package com.petrsu.se.secretary;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -50,16 +53,21 @@ public class VkGetFileRequest extends AsyncTask<ArrayList<String>, Void, Integer
                 Log.d("VKTEST", "200");
                 InputStream vis = vkConnection.getInputStream();
                 InputStreamReader visr = new InputStreamReader(vis, "UTF-8");
-                char[] test = new char[255];
                 //JsonReader jsonVk = new JsonReader(visr); // TODO: нормальный парсер надо бы (проверка на ошибки и всё такое)
                 //jsonVk.beginObject();
-                visr.read(test, 0, 255);
-                String test1 = "";
-                for (int i = 0; i < 255; i++) {
-                    test1 += test[i];
+                BufferedReader vkbr = new BufferedReader(visr);
+                StringBuilder vksb = new StringBuilder();
+                String jsonOneString = "";
+                while ((jsonOneString = vkbr.readLine()) != null) {
+                    vksb.append(jsonOneString);
+                    vksb.append("\n");
                 }
-                Log.d("VKTEST", test1);
+                String jsonFull = vksb.toString();
+                Log.d("VKTEST", jsonFull);
                 //jsonVk.close();*/
+                JSONObject jsonResponse = new JSONObject(jsonFull);
+                JSONObject response = jsonResponse.getJSONObject("response");
+                Log.d("VKTEST", String.valueOf(response.getInt("count")));
             } else {
                 Log.d("VKTEST", String.valueOf(respCode));
                 vkConnection.disconnect();
