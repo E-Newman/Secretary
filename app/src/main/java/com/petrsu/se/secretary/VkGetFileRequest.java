@@ -1,8 +1,11 @@
 package com.petrsu.se.secretary;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -10,12 +13,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Random;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class VkGetFileRequest extends AsyncTask<ArrayList<String>, Void, Integer> {
+    public String docUrl = "";
     @Override
     protected Integer doInBackground(ArrayList<String>... docList) {
         URL vkApiUrl;
@@ -31,8 +33,8 @@ public class VkGetFileRequest extends AsyncTask<ArrayList<String>, Void, Integer
 
         /* пока просто поиск без скачивания */
         try {
-            vkApiUrl = new URL("https://api.vk.com/method/docs.get?count=1&owner_id=-174962845" +
-                    "&access_token=" + currentVkUserToken + "&v=5.101"); // парсим жсон, ищем по имени
+            vkApiUrl = new URL("https://api.vk.com/method/docs.get?owner_id=-174962845" +
+                    "&access_token=" + currentVkUserToken + "&v=5.101"); // TODO: пока это тупо поиск первого файла; запрос тащит все доки
             Log.d("VKTEST", "URL success");
         }  catch (Exception e) {
             e.printStackTrace();
@@ -67,7 +69,9 @@ public class VkGetFileRequest extends AsyncTask<ArrayList<String>, Void, Integer
                 //jsonVk.close();*/
                 JSONObject jsonResponse = new JSONObject(jsonFull);
                 JSONObject response = jsonResponse.getJSONObject("response");
-                Log.d("VKTEST", String.valueOf(response.getInt("count")));
+                JSONArray docArray = response.getJSONArray("items");
+                docUrl = docArray.getJSONObject(0).getString("url");
+                Log.d("VKTEST", docArray.getJSONObject(0).getString("url"));
             } else {
                 Log.d("VKTEST", String.valueOf(respCode));
                 vkConnection.disconnect();

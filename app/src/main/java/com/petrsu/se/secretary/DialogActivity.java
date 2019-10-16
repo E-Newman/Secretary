@@ -218,7 +218,19 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        docArgs.add(fileName);
                        docArgs.add(currentVkUserToken);
                        vfr.execute(docArgs); // TODO: для асинков проверка кода возврата или типа того
-                       speak("Файл " + fileName + " найден, но не забудь скачать.");
+                       try {
+                           Thread.sleep(3000);
+                           if (vfr.docUrl != "") {
+                               String docUrl = vfr.docUrl;
+                               speak("Файл " + fileName + " найден.");
+                               Intent docOpenIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(docUrl)); // TODO: нормальный выброс url
+                               docOpenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                               docOpenIntent.setPackage("com.android.chrome");
+                               this.startActivity(docOpenIntent);
+                           } else speak("Ошибка при поиске файла " + fileName + ".");
+                       } catch (Exception e) {
+                           e.printStackTrace();
+                       }
                    } else speak("Имя файла не задано.");
                }
             }
