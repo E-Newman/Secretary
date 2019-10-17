@@ -235,7 +235,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                docOpenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                docOpenIntent.setPackage("com.android.chrome");
                                this.startActivity(docOpenIntent);
-                           } else speak("Ошибка при поиске файла " + fileName + ".");
+                           } else speak("Файл " + fileName + " не найден.");
                        } catch (Exception e) {
                            e.printStackTrace();
                        }

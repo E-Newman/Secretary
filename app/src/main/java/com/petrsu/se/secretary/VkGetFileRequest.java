@@ -1,7 +1,5 @@
 package com.petrsu.se.secretary;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -27,14 +25,17 @@ public class VkGetFileRequest extends AsyncTask<ArrayList<String>, Void, Integer
 
         ArrayList<String> receivedList = docList[0];
 
+        /* Буквы Ё гугл не читает, все файлы именуем только с Е */
         fileName = receivedList.get(0);
+        if(fileName.endsWith(" ")) { // распознавалка гугла цепляет к последнему слову пробел, уберём его для нормального поиска
+            fileName = fileName.substring(0, fileName.length() - 1);
+        }
         currentVkUserToken = receivedList.get(1);
         Log.d("VKTEST", currentVkUserToken);
 
-        /* пока просто поиск без скачивания */
         try {
             vkApiUrl = new URL("https://api.vk.com/method/docs.get?owner_id=-174962845" +
-                    "&access_token=" + currentVkUserToken + "&v=5.101"); // TODO: пока это тупо поиск первого файла; запрос тащит все доки
+                    "&access_token=" + currentVkUserToken + "&v=5.101");
             Log.d("VKTEST", "URL success");
         }  catch (Exception e) {
             e.printStackTrace();
@@ -55,8 +56,6 @@ public class VkGetFileRequest extends AsyncTask<ArrayList<String>, Void, Integer
                 Log.d("VKTEST", "200");
                 InputStream vis = vkConnection.getInputStream();
                 InputStreamReader visr = new InputStreamReader(vis, "UTF-8");
-                //JsonReader jsonVk = new JsonReader(visr); // TODO: нормальный парсер надо бы (проверка на ошибки и всё такое)
-                //jsonVk.beginObject();
                 BufferedReader vkbr = new BufferedReader(visr);
                 StringBuilder vksb = new StringBuilder();
                 String jsonOneString = "";
@@ -66,11 +65,16 @@ public class VkGetFileRequest extends AsyncTask<ArrayList<String>, Void, Integer
                 }
                 String jsonFull = vksb.toString();
                 Log.d("VKTEST", jsonFull);
-                //jsonVk.close();*/
                 JSONObject jsonResponse = new JSONObject(jsonFull);
                 JSONObject response = jsonResponse.getJSONObject("response");
                 JSONArray docArray = response.getJSONArray("items");
-                docUrl = docArray.getJSONObject(0).getString("url");
+                for(int i = 0; i < docArray.length(); i++) {
+                    String nameWithoutExt = docArray.getJSONObject(i).getString("title").split("\\.")[0]; // убираем расширение
+                    if(fileName.equalsIgnoreCase(nameWithoutExt)) {
+                        docUrl = docArray.getJSONObject(i).getString("url");
+                        break;
+                    }
+                }
                 Log.d("VKTEST", docArray.getJSONObject(0).getString("url"));
             } else {
                 Log.d("VKTEST", String.valueOf(respCode));
