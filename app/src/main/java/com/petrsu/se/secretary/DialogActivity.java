@@ -1,23 +1,28 @@
 package com.petrsu.se.secretary;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.Voice;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +35,7 @@ import com.vk.api.sdk.auth.VKScope;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -38,11 +44,17 @@ import java.util.regex.Pattern;
 
 public class DialogActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int VR_REQUEST = 999;
-    private int MY_DATA_CHECK_CODE = 0;
+    private static final int STORAGE_REQUEST_CODE = 102;
+    private static final int RECORD_REQUEST_CODE = 103;
     private TextToSpeech repeatTTS;
     private Button speakButton;
     private boolean hasTelephony = false;
     private String currentVkUserToken = ""; // токен текущей сессии для работы с пользовательскими методами api
+    private boolean screenRecordWorking = false;
+    private MediaProjectionManager mediaProjectionManager;
+    private MediaProjection mediaProjection;
+    private ScreenRecorder screenRecorder;
+    private DataTransfer dt = null;
 
     public void speak(String text) {
         repeatTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, String.valueOf(System.currentTimeMillis()));
@@ -92,6 +104,44 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         List<VKScope> scopes = new ArrayList<>();
         scopes.add(VKScope.DOCS);
         VK.login(this, scopes);
+
+        // готовим сервис и файл для записи экрана
+        mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_REQUEST_CODE);
+        }
+
+        File outFile = new File("/data/user/0/com.petrsu.se.secretary/record.mp4"); // TODO: shift for any devices
+
+        Log.d("FILE", outFile.getAbsolutePath());
+        if (outFile.exists()) {
+            if (outFile.delete()) {
+                Log.d("RECORD", "Deleted in STA");
+            }  else Log.e("RECORD", "File delete issues in STA");
+        }
+        if (!outFile.exists()) {
+            try {
+                if (outFile.createNewFile()) {
+                    Log.d("RECORD", "Created in STA");
+                } else Log.e("RECORD", "File create issues in STA");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        Intent captureIntent = mediaProjectionManager.createScreenCaptureIntent();
+        startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
+        Intent recIntent = new Intent(this, ScreenRecorder.class);
+        bindService(recIntent, connection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(connection);
     }
 
     public void onClick(View view) {
@@ -240,9 +290,54 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            e.printStackTrace();
                        }
                    } else speak("Имя файла не задано.");
+               } else if(commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("трансляцию")
+                       && commandParts[2].equalsIgnoreCase("экрана")) {
+                   if (!screenRecordWorking) {
+                       TVStatusChecker tvc = new TVStatusChecker();
+                       tvc.execute("192.168.0.101"); // TODO: IP из настроек
+
+                       try {
+                           Thread.sleep(3000);
+                       } catch (Exception e) {
+                           speak(tvc.tvStatus);
+                           e.printStackTrace();
+                       }
+
+                       if (tvc.tvStatus.contains("Соединение установлено")) { // раскомментить, когда будем перекидываться сообщениями
+                           speak(tvc.tvStatus);
+                           screenRecordWorking = true;
+
+                           screenRecorder.startRecord();
+                           dt = new DataTransfer(screenRecorder);
+                           dt.execute("192.168.0.101");
+                       } else {
+                           speak(tvc.tvStatus);
+                       }
+                   } else {
+                       speak("Трансляция экрана уже идёт.");
+                   }
+               }  else if(commandParts[0].equalsIgnoreCase("останови") && commandParts[1].equalsIgnoreCase("трансляцию")
+                       && commandParts[2].equalsIgnoreCase("экрана")) {
+                   if(screenRecordWorking) {
+                       dt.working = false;
+                       screenRecordWorking = false;
+                       speak("Трансляция остановлена.");
+                   } else {
+                       speak("Трансляция экрана не запущена.");
+                   }
                }
             }
         }
+
+        if (requestCode == RECORD_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
+                screenRecorder.setMediaProject(mediaProjection);
+            } else {
+                Log.e("RESULT CODE", Integer.toString(resultCode));
+            }
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -254,4 +349,20 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         }
         return false;
     }
+
+    private ServiceConnection connection = new ServiceConnection() { // соединение с сервисом записи экрана
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            ScreenRecorder.RecordBinder binder = (ScreenRecorder.RecordBinder) service;
+            screenRecorder = binder.getScreenRecorder();
+            Log.e("SCREEEN", "recorder");
+            screenRecorder.setConfig(metrics.widthPixels, metrics.heightPixels, metrics.densityDpi);
+            screenRecorder.setMediaProject(mediaProjection);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {}
+    };
 }
