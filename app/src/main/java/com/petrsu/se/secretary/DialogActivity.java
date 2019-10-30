@@ -263,7 +263,26 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                    if(messageToSend != "") {
                        VkMessageRequest vmr = new VkMessageRequest();
                        vmr.execute(messageToSend);
-                       speak( "Сообщение " + messageToSend + " отправлено.");
+                       try {
+                           Thread.sleep(1000);
+
+                           if(vmr.requestResult == 0) {
+                               speak( "Сообщение отправлено.");
+                           } else if(vmr.requestResult == -1) {
+                               speak("Не удалось сформировать запрос.");
+                           } else if(vmr.requestResult == -2) {
+                               speak("Не удалось установить соединение с ВКонтакте.");
+                           } else if(vmr.requestResult == -3) {
+                               speak("Ошибка HTTP-запроса с кодом " + vmr.respCode + ".");
+                           } else if(vmr.requestResult == -4) {
+                               speak("Ошибка при отправке сообщения.");
+                           } else if(vmr.requestResult == 1) {
+                               speak("Сбой при запуске отправки сообщения.");
+                           }
+                       } catch (Exception e) {
+                           e.printStackTrace();
+                           speak("Ошибка при попытке сформировать запрос на отправку сообщения.");
+                       }
                    } else speak("Сообщение не задано.");
                } else if(commandParts[0].equalsIgnoreCase("найди") && commandParts[1].equalsIgnoreCase("документ")) {
                    String fileName = "";
@@ -275,41 +294,73 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        ArrayList<String> docArgs = new ArrayList<>();
                        docArgs.add(fileName);
                        docArgs.add(currentVkUserToken);
-                       vfr.execute(docArgs); // TODO: для асинков проверка кода возврата или типа того
+                       vfr.execute(docArgs); // для асинков проверка кода возврата через свойство; через интерфейс неудобно, т.к. нужно обращаться к полям объекта задачи, для чего нужно его как-то пробрасывать
                        try {
                            Thread.sleep(3000);
-                           if (vfr.docUrl != "") {
-                               String docUrl = vfr.docUrl;
-                               speak("Файл " + fileName + " найден.");
-                               Intent docOpenIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(docUrl)); // TODO: нормальный выброс url
-                               docOpenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                               docOpenIntent.setPackage("com.android.chrome");
-                               this.startActivity(docOpenIntent);
-                           } else speak("Файл " + fileName + " не найден.");
+
+                           if(vfr.requestResult == 0) {
+                               if (vfr.docUrl != "") {
+                                   String docUrl = vfr.docUrl;
+                                   speak("Файл " + fileName + " найден.");
+                                   Intent docOpenIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(docUrl)); // TODO: нормальный выброс url
+                                   docOpenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                   docOpenIntent.setPackage("com.android.chrome");
+                                   this.startActivity(docOpenIntent);
+                               } else speak("Файл " + fileName + " не найден.");
+                           } else if(vfr.requestResult == -1) {
+                               speak("Не удалось сформировать запрос.");
+                           } else if(vfr.requestResult == -2) {
+                               speak("Не удалось установить соединение с ВКонтакте.");
+                           } else if(vfr.requestResult == -3) {
+                               speak("Ошибка HTTP-запроса с кодом " + vfr.respCode + ".");
+                           } else if(vfr.requestResult == -4) {
+                               speak("Ошибка при получении документа.");
+                           } else if(vfr.requestResult == 1) {
+                           speak("Сбой при запуске получения документа.");
+                       }
                        } catch (Exception e) {
                            e.printStackTrace();
+                           speak("Ошибка при попытке сформировать запрос на документ.");
                        }
                    } else speak("Имя файла не задано.");
                } else if(commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("трансляцию")
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if (!screenRecordWorking) {
                        TVStatusChecker tvc = new TVStatusChecker();
-                       tvc.execute("192.168.0.101"); // TODO: IP из настроек
+                       tvc.execute("192.168.0.102"); // TODO: IP из настроек
 
                        try {
+                           speak("Проверка статуса приёмника...");
                            Thread.sleep(3000);
                        } catch (Exception e) {
                            speak(tvc.tvStatus);
                            e.printStackTrace();
                        }
 
-                       if (tvc.tvStatus.contains("Соединение установлено")) { // раскомментить, когда будем перекидываться сообщениями
+                       if (tvc.tvStatus.contains("Соединение установлено")) {
                            speak(tvc.tvStatus);
                            screenRecordWorking = true;
 
                            screenRecorder.startRecord();
                            dt = new DataTransfer(screenRecorder);
-                           dt.execute("192.168.0.101");
+                           dt.execute("192.168.0.102");
+                           // задержка, чтобы проверить, всё ли хорошо с передачей
+                           try {
+                               speak("Начало записи видео. Пожалуйста, подождите...");
+                               Thread.sleep(5000);
+                               if(dt.requestResult != 0) {
+                                   if(dt.requestResult == -1) {
+                                       speak("Задан некорректный IP-адрес. Проверьте настройки.");
+                                   } else if(dt.requestResult == -2) {
+                                       speak("Ошибка при создании сокета");
+                                   } else if(dt.requestResult == -3) {
+                                       speak("Ошибка при начале записи");
+                                   }
+                               } else speak("Запись успешно начата, можно продолжать работу.");
+                           } catch (Exception e) {
+                               e.printStackTrace();
+                               speak("Ошибка при попытке записи видео");
+                           }
                        } else {
                            speak(tvc.tvStatus);
                        }

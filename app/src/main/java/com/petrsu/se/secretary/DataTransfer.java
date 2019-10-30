@@ -18,6 +18,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
     private ScreenRecorder screenRecorder;
     private InetAddress ia;
     public boolean working = true;
+    public int requestResult = 0;
 
     public DataTransfer(ScreenRecorder screenRecorder) {
         this.screenRecorder = screenRecorder;
@@ -36,6 +37,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             ia = InetAddress.getByName(addria);
         } catch (Exception e) {
             Log.e("FATAL","Failed to resolve IP");
+            requestResult = -1;
             return -1;
         }
 
@@ -43,14 +45,9 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             sock = new Socket(addria, 11112);
         } catch (Exception e) {
             Log.e("FATAL","Failed to create the socket");
+            requestResult = -2;
             return -2;
         }
-
-        /*try {
-            lsock = new Socket(addria,11113);
-        } catch (Exception e) {
-            Log.e("FATAL", "Failed to create the listening socket");
-        }*/
 
         Timer sendTimer = new Timer();
         TimerTask sendTask = new sendTask(sock, lsock, ia, sendTimer);
@@ -58,12 +55,14 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         stopPack = new byte[9];
 
         try {
-            Thread.sleep(3000); // freeze to write some video
+            Thread.sleep(5000); // freeze to write some video
         } catch (Exception e) {
             e.printStackTrace();
+            requestResult = -3;
+            return -3;
         }
 
-        sendTimer.schedule(sendTask, 0, 3000); // TODO: find optimal vid length
+        sendTimer.schedule(sendTask, 0, 5000); // TODO: find optimal vid length
 
         Log.i("START", "Data transfer start");
         while (timerRunning);
@@ -73,9 +72,11 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             if (!sock.isClosed()) sock.close();
         } catch (Exception e) {
             Log.e("FATAL", "Socket wasn't closed");
+            requestResult = -4;
             return -4;
         }
 
+        requestResult = 0;
         return 0;
     }
 
@@ -88,8 +89,8 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         Socket sock, lsock;
         InetAddress ia;
         Timer sendTimer;
-        int sentFifth = 0;
-        byte[] lenByte = new byte[1], videoBytes;
+        //int sentFifth = 0;
+        byte[] videoBytes;
 
         File sendFile = new File("/data/user/0/com.petrsu.se.secretary/record.mp4");
 
@@ -127,39 +128,19 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                         Log.i("FILELEN", "Длина файла " + len);
                         if (sendFile.exists()) {
                             n = fis.read(videoBytes);
-                            //while (len > 0 && (n = fis.read(videoBytes)) != -1) {
-                            //Log.i("FILELEN", "n: " + n);
-                            //len -= n;
                             dos.write(videoBytes, 0, Math.min(videoBytes.length, (int) len));
-                            //}
                         } else Log.e("FILE", "Not found");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    if (sentFifth != 5) { // debug
+                    /*if (sentFifth != 5) { // debug
                         screenRecorder.startRecord();
                         sentFifth++;
                     } else {
-                            /*try {
-                                dos.writeInt(-1);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }*/
                         sendTimer.cancel();
                         Log.i("FILELEN", "finish");
-                    }
+                    }*/
                 }
-            /*try {
-                lsock.receive(new DatagramPacket(stopPack, stopPack.length));
-                if (stopPack.toString() == "Interrupt") {
-                    sendTimer.cancel();
-                }
-            }
-            catch (Exception e) {
-                Log.e("FATAL", "Failed to receive a stop datagram");
-                sendTimer.cancel();
-                return;
-            }*/
             } else {
                 try {
                     dos.writeLong(-11);
