@@ -109,6 +109,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             try {
                 dos = new DataOutputStream(sock.getOutputStream());
             } catch (IOException e) {
+                Log.e("S2S", "1");
                 e.printStackTrace();
             }
             if (working) {
@@ -120,17 +121,19 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                     try {
                         fis = new FileInputStream(sendFile);
                     } catch (Exception e) {
+                        Log.e("S2S", "2");
                         e.printStackTrace();
                     }
-                    Log.d("RECORDED", "Yeee");
+                    Log.d("S2S", "Yeee");
                     try {
                         dos.writeLong(len);
                         Log.i("FILELEN", "Длина файла " + len);
                         if (sendFile.exists()) {
                             n = fis.read(videoBytes);
                             dos.write(videoBytes, 0, Math.min(videoBytes.length, (int) len));
-                        } else Log.e("FILE", "Not found");
+                        } else Log.e("S2S", "Not found");
                     } catch (Exception e) {
+                        Log.e("S2S", "3");
                         e.printStackTrace();
                     }
                     /*if (sentFifth != 5) { // debug
@@ -140,11 +143,13 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                         sendTimer.cancel();
                         Log.i("FILELEN", "finish");
                     }*/
+                    screenRecorder.startRecord();
                 }
             } else {
                 try {
                     dos.writeLong(-11);
                 } catch (Exception e) {
+                    Log.e("S2S", "4");
                     e.printStackTrace();
                 }
                 sendTimer.cancel();

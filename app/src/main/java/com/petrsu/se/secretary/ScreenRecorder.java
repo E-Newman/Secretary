@@ -9,6 +9,8 @@ import android.media.projection.MediaProjection;
 import android.os.Binder;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.util.Log;
+
 import java.io.IOException;
 
 public class ScreenRecorder extends Service {
@@ -100,6 +102,7 @@ public class ScreenRecorder extends Service {
         try {
             mediaRecorder.prepare();
         } catch (IOException e) {
+            Log.e("S2S", "Check problems");
             e.printStackTrace();
         }
     }
