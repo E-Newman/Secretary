@@ -14,6 +14,7 @@ import android.media.projection.MediaProjectionManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
@@ -262,7 +263,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                    }
                    if(messageToSend != "") {
                        VkMessageRequest vmr = new VkMessageRequest();
-                       vmr.execute(messageToSend);
+                       vmr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, messageToSend);
                        try {
                            Thread.sleep(1000);
 
@@ -294,7 +295,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        ArrayList<String> docArgs = new ArrayList<>();
                        docArgs.add(fileName);
                        docArgs.add(currentVkUserToken);
-                       vfr.execute(docArgs); // для асинков проверка кода возврата через свойство; через интерфейс неудобно, т.к. нужно обращаться к полям объекта задачи, для чего нужно его как-то пробрасывать
+                       vfr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, docArgs); // для асинков проверка кода возврата через свойство; через интерфейс неудобно, т.к. нужно обращаться к полям объекта задачи, для чего нужно его как-то пробрасывать
                        try {
                            Thread.sleep(3000);
 
@@ -327,7 +328,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if (!screenRecordWorking) {
                        TVStatusChecker tvc = new TVStatusChecker();
-                       tvc.execute("192.168.0.102"); // TODO: IP из настроек
+                       tvc.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "192.168.0.102"); // TODO: IP из настроек
 
                        try {
                            speak("Проверка статуса приёмника...");
@@ -343,7 +344,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
                            screenRecorder.startRecord();
                            dt = new DataTransfer(screenRecorder);
-                           dt.execute("192.168.0.102");
+                           dt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"192.168.0.102");
                            // задержка, чтобы проверить, всё ли хорошо с передачей
                            try {
                                speak("Начало записи видео. Пожалуйста, подождите...");
