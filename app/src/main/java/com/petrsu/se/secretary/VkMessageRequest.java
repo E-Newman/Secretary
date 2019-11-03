@@ -6,14 +6,12 @@ import android.util.Log;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Date;
 import java.util.Random;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class VkMessageRequest extends AsyncTask<String, Void, Integer> {
-    public int requestResult = 1;
-    public int respCode = 0;
-
     @Override
     protected Integer doInBackground(String... args) {
         URL vkApiUrl;
@@ -25,8 +23,6 @@ public class VkMessageRequest extends AsyncTask<String, Void, Integer> {
         for(String part : args) {
             messageToSend += part;
         }
-
-        Log.d("VKMSG", "Starting to send...");
 
         Random idRandom = new Random(System.currentTimeMillis());
         randomId = idRandom.nextLong();
@@ -40,7 +36,6 @@ public class VkMessageRequest extends AsyncTask<String, Void, Integer> {
             Log.d("VKTEST", "URL success");
         }  catch (Exception e) {
             e.printStackTrace();
-            requestResult = -1;
             return -1;
         }
         try {
@@ -50,11 +45,10 @@ public class VkMessageRequest extends AsyncTask<String, Void, Integer> {
         }
         catch (Exception e) {
             e.printStackTrace();
-            requestResult = -2;
             return -2;
         }
         try {
-            respCode = vkConnection.getResponseCode();
+            int respCode = vkConnection.getResponseCode();
             if(respCode == 200) {
                 Log.d("VKTEST", "200");
                 InputStream vis = vkConnection.getInputStream();
@@ -71,18 +65,13 @@ public class VkMessageRequest extends AsyncTask<String, Void, Integer> {
                 //jsonVk.close();*/
             } else {
                 Log.d("VKTEST", String.valueOf(respCode));
-                vkConnection.disconnect();
-                requestResult = -3;
-                return -3;
             }
         } catch(Exception e) {
             e.printStackTrace();
             vkConnection.disconnect();
-            requestResult = -4;
-            return -4;
+            return -3;
         }
         vkConnection.disconnect();
-        requestResult = 0;
         return 0;
     }
 }
