@@ -116,23 +116,21 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_REQUEST_CODE);
         }
 
-        for(int i = 0; i < 20; i++) { // create files in downloads to see them on phone (for tests)
-            File outFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record" + i +".mp4"); // TODO: shift for any devices
+        File outFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record.mp4"); // TODO: shift for any devices
 
-            Log.d("DOWNLOADFILE", outFile.getAbsolutePath());
-            if (outFile.exists()) {
-                if (outFile.delete()) {
-                    Log.d("RECORD", "Deleted in STA");
-                } else Log.e("RECORD", "File delete issues in STA");
-            }
-            if (!outFile.exists()) {
-                try {
-                    if (outFile.createNewFile()) {
-                        Log.d("RECORD", "Created in STA");
-                    } else Log.e("RECORD", "File create issues in STA");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        Log.d("DOWNLOADFILE", outFile.getAbsolutePath());
+        if (outFile.exists()) {
+            if (outFile.delete()) {
+                Log.d("RECORD", "Deleted in STA");
+            } else Log.e("RECORD", "File delete issues in STA");
+        }
+        if (!outFile.exists()) {
+            try {
+                if (outFile.createNewFile()) {
+                    Log.d("RECORD", "Created in STA");
+                } else Log.e("RECORD", "File create issues in STA");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -297,7 +295,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if (!screenRecordWorking) {
                        TVStatusChecker tvc = new TVStatusChecker();
-                       tvc.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"192.168.43.219"); // TODO: IP из настроек
+                       tvc.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"192.168.0.100"); // TODO: IP из настроек
 
                        try {
                            Thread.sleep(3000);
@@ -312,7 +310,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
                            screenRecorder.startRecord();
                            dt = new DataTransfer(screenRecorder);
-                           dt.execute("192.168.43.219");
+                           dt.execute("192.168.0.100");
                        } else {
                            speak(tvc.tvStatus);
                        }

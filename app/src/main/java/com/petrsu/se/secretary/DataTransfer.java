@@ -84,7 +84,6 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         InetAddress ia;
         Timer sendTimer;
         byte[] videoBytes;
-        int i = 0;
 
         public sendTask(Socket sock, Socket lsock, InetAddress ia, Timer sendTimer) {
             this.sock = sock;
@@ -96,7 +95,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         @Override
         public void run() {
-            File sendFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record" + i +".mp4");
+            File sendFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record.mp4");
             long len = sendFile.length();
             DataOutputStream dos = null;
             try {
@@ -105,7 +104,6 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 e.printStackTrace();
             }
             if (working) {
-                //if (len >= 600000) {
                     screenRecorder.stopRecord();
                     videoBytes = new byte[(int) len];
                     FileInputStream fis = null;
@@ -116,19 +114,17 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                     }
                     Log.d("RECORDED", "Yeee");
                     try {
-                        Log.d("DOWNLOADFILE", "Длина файла " + i + " " + len);
-                        Log.d("DOWNLOADFILE", "Длина массива " + i + " " + videoBytes.length);
+                        Log.d("DOWNLOADFILE", "Длина файла " + len);
+                        Log.d("DOWNLOADFILE", "Длина массива " + videoBytes.length);
                         if (sendFile.exists()) {
                             fis.read(videoBytes);
                             dos.writeLong(videoBytes.length);
                             dos.write(videoBytes, 0, videoBytes.length);
-                            i++;
                         } else Log.e("FILE", "Not found");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     screenRecorder.startRecord();
-                //}
             } else {
                 try {
                     dos.writeLong(-11);

@@ -20,7 +20,6 @@ public class ScreenRecorder extends Service {
     private MediaRecorder mediaRecorder;
     private VirtualDisplay virtualDisplay = null;
     private boolean running;
-    private int i = 0;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -94,12 +93,11 @@ public class ScreenRecorder extends Service {
     private void initRecorder() {
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setOutputFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record" + i +".mp4");
+        mediaRecorder.setOutputFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record.mp4");
         mediaRecorder.setVideoSize(dWidth, dHeight);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setVideoEncodingBitRate(3 * 1024 * 1024);
         mediaRecorder.setVideoFrameRate(30);
-        i++;
         try {
             mediaRecorder.prepare();
         } catch (IOException e) {
