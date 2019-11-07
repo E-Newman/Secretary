@@ -14,6 +14,8 @@ import android.media.projection.MediaProjectionManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
@@ -114,21 +116,23 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_REQUEST_CODE);
         }
 
-        File outFile = new File("/data/user/0/com.petrsu.se.secretary/record.mp4"); // TODO: shift for any devices
+        for(int i = 0; i < 20; i++) { // create files in downloads to see them on phone (for tests)
+            File outFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record" + i +".mp4"); // TODO: shift for any devices
 
-        Log.d("FILE", outFile.getAbsolutePath());
-        if (outFile.exists()) {
-            if (outFile.delete()) {
-                Log.d("RECORD", "Deleted in STA");
-            }  else Log.e("RECORD", "File delete issues in STA");
-        }
-        if (!outFile.exists()) {
-            try {
-                if (outFile.createNewFile()) {
-                    Log.d("RECORD", "Created in STA");
-                } else Log.e("RECORD", "File create issues in STA");
-            } catch (Exception e) {
-                e.printStackTrace();
+            Log.d("DOWNLOADFILE", outFile.getAbsolutePath());
+            if (outFile.exists()) {
+                if (outFile.delete()) {
+                    Log.d("RECORD", "Deleted in STA");
+                } else Log.e("RECORD", "File delete issues in STA");
+            }
+            if (!outFile.exists()) {
+                try {
+                    if (outFile.createNewFile()) {
+                        Log.d("RECORD", "Created in STA");
+                    } else Log.e("RECORD", "File create issues in STA");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -227,7 +231,6 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                            Log.d("PHONEBOOK", nameInBook);
                                            Matcher m = namePattern.matcher(nameInBook);
                                            if (m.matches()) {
-                                               //Log.d("PHONEBOOK", nameInBook + "kk");
                                                int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(HasPhoneNumber)));
                                                if (hasPhoneNumber > 0) {
                                                    Cursor phoneCursor = contentResolver.query(PhoneContentUri, null,
@@ -262,7 +265,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                    }
                    if(messageToSend != "") {
                        VkMessageRequest vmr = new VkMessageRequest();
-                       vmr.execute(messageToSend);
+                       vmr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, messageToSend);
                        speak( "Сообщение " + messageToSend + " отправлено.");
                    } else speak("Сообщение не задано.");
                } else if(commandParts[0].equalsIgnoreCase("найди") && commandParts[1].equalsIgnoreCase("документ")) {
@@ -275,7 +278,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        ArrayList<String> docArgs = new ArrayList<>();
                        docArgs.add(fileName);
                        docArgs.add(currentVkUserToken);
-                       vfr.execute(docArgs); // TODO: для асинков проверка кода возврата или типа того
+                       vfr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, docArgs); // TODO: для асинков проверка кода возврата или типа того
                        try {
                            Thread.sleep(3000);
                            if (vfr.docUrl != "") {
@@ -294,7 +297,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if (!screenRecordWorking) {
                        TVStatusChecker tvc = new TVStatusChecker();
-                       tvc.execute("192.168.0.103"); // TODO: IP из настроек
+                       tvc.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"192.168.43.219"); // TODO: IP из настроек
 
                        try {
                            Thread.sleep(3000);
@@ -309,7 +312,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
                            screenRecorder.startRecord();
                            dt = new DataTransfer(screenRecorder);
-                           dt.execute("192.168.0.103");
+                           dt.execute("192.168.43.219");
                        } else {
                            speak(tvc.tvStatus);
                        }

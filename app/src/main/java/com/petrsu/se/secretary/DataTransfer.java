@@ -1,6 +1,7 @@
 package com.petrsu.se.secretary;
 
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.DataOutputStream;
@@ -57,7 +58,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             e.printStackTrace();
         }
 
-        sendTimer.schedule(sendTask, 0, 3000); // TODO: find optimal vid length
+        sendTimer.schedule(sendTask, 0, 5000); // TODO: find optimal vid length
 
         Log.i("START", "Data transfer start");
         while (timerRunning);
@@ -83,8 +84,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         InetAddress ia;
         Timer sendTimer;
         byte[] videoBytes;
-
-        File sendFile = new File("/data/user/0/com.petrsu.se.secretary/record.mp4");
+        int i = 0;
 
         public sendTask(Socket sock, Socket lsock, InetAddress ia, Timer sendTimer) {
             this.sock = sock;
@@ -96,6 +96,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         @Override
         public void run() {
+            File sendFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record" + i +".mp4");
             long len = sendFile.length();
             DataOutputStream dos = null;
             try {
@@ -104,7 +105,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 e.printStackTrace();
             }
             if (working) {
-                if (len >= 600000) {
+                //if (len >= 600000) {
                     screenRecorder.stopRecord();
                     videoBytes = new byte[(int) len];
                     FileInputStream fis = null;
@@ -115,21 +116,19 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                     }
                     Log.d("RECORDED", "Yeee");
                     try {
-                        dos.writeLong(len);
-                        Log.i("FILELEN", "Длина файла " + len);
+                        Log.d("DOWNLOADFILE", "Длина файла " + i + " " + len);
+                        Log.d("DOWNLOADFILE", "Длина массива " + i + " " + videoBytes.length);
                         if (sendFile.exists()) {
                             fis.read(videoBytes);
-                            //while (len > 0 && (n = fis.read(videoBytes)) != -1) {
-                            //Log.i("FILELEN", "n: " + n);
-                            //len -= n;
-                            dos.write(videoBytes, 0, Math.min(videoBytes.length, (int) len));
-                            //}
+                            dos.writeLong(videoBytes.length);
+                            dos.write(videoBytes, 0, videoBytes.length);
+                            i++;
                         } else Log.e("FILE", "Not found");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     screenRecorder.startRecord();
-                }
+                //}
             } else {
                 try {
                     dos.writeLong(-11);
