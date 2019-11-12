@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
@@ -38,9 +40,11 @@ import com.vk.api.sdk.auth.VKScope;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,6 +61,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
     private MediaProjection mediaProjection;
     private ScreenRecorder screenRecorder;
     private DataTransfer dt = null;
+    private String ipFromAssets = "";
 
     public void speak(String text) {
         repeatTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, String.valueOf(System.currentTimeMillis()));
@@ -133,6 +138,25 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                 e.printStackTrace();
             }
         }
+
+        // читаем IP из файла ресурса
+        Resources ipResources = getResources();
+        AssetManager ipManager = ipResources.getAssets();
+        InputStream ipis;
+        Properties ipProp = null;
+
+        try {
+            ipis = getApplicationContext().getAssets().open("ip");
+            ipProp = new Properties();
+            ipProp.load(ipis);
+            ipFromAssets = ipProp.getProperty("IP");
+            Log.d("IPRES", ipFromAssets);
+            speak(ipFromAssets);
+        } catch (Exception e) {
+            Log.d("IPRES", e.getMessage());
+            //e.printStackTrace();
+        }
+
 
         Intent captureIntent = mediaProjectionManager.createScreenCaptureIntent();
         startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
@@ -295,7 +319,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if (!screenRecordWorking) {
                        TVStatusChecker tvc = new TVStatusChecker();
-                       tvc.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"192.168.0.100"); // TODO: IP из настроек
+                       tvc.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,ipFromAssets);
 
                        try {
                            Thread.sleep(3000);
@@ -310,7 +334,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
                            screenRecorder.startRecord();
                            dt = new DataTransfer(screenRecorder);
-                           dt.execute("192.168.0.100");
+                           dt.execute(ipFromAssets);
                        } else {
                            speak(tvc.tvStatus);
                        }

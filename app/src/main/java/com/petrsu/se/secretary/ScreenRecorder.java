@@ -96,7 +96,7 @@ public class ScreenRecorder extends Service {
         mediaRecorder.setOutputFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record.mp4");
         mediaRecorder.setVideoSize(dWidth, dHeight);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        mediaRecorder.setVideoEncodingBitRate(3 * 1024 * 1024);
+        mediaRecorder.setVideoEncodingBitRate(2 * 1024 * 1024);
         mediaRecorder.setVideoFrameRate(30);
         try {
             mediaRecorder.prepare();
