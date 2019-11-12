@@ -151,12 +151,10 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
             ipProp.load(ipis);
             ipFromAssets = ipProp.getProperty("IP");
             Log.d("IPRES", ipFromAssets);
-            speak(ipFromAssets);
         } catch (Exception e) {
             Log.d("IPRES", e.getMessage());
             //e.printStackTrace();
         }
-
 
         Intent captureIntent = mediaProjectionManager.createScreenCaptureIntent();
         startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
@@ -214,7 +212,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                     data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
             String[] commandParts = suggestedCommand.split(" ");
             if (!commandParts[0].equals("")) {
-               if(commandParts[0].equalsIgnoreCase("позвони")) {
+               if(commandParts.length >= 1 && commandParts[0].equalsIgnoreCase("позвони")) {
                    String contactName = "";
                    for (int i = 1; i < commandParts.length; i++) {
                        contactName += commandParts[i] + " ";
@@ -280,7 +278,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            } else speak("Вы не разрешили использовать телефонную книгу");
                        } else speak("Невозможно совершать звонки на этом устройстве");
                    } else speak( "Абонент не назван");
-               } else if(commandParts[0].equalsIgnoreCase("отправь") && commandParts[1].equalsIgnoreCase("сообщение")) {
+               } else if(commandParts.length >= 2
+                       && commandParts[0].equalsIgnoreCase("отправь") && commandParts[1].equalsIgnoreCase("сообщение")) {
                    String messageToSend = "";
                    for(int i = 2; i < commandParts.length; i++) {
                        messageToSend += commandParts[i] + " ";
@@ -290,7 +289,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        vmr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, messageToSend);
                        speak( "Сообщение " + messageToSend + " отправлено.");
                    } else speak("Сообщение не задано.");
-               } else if(commandParts[0].equalsIgnoreCase("найди") && commandParts[1].equalsIgnoreCase("документ")) {
+               } else if(commandParts.length >= 2
+                    && commandParts[0].equalsIgnoreCase("найди") && commandParts[1].equalsIgnoreCase("документ")) {
                    String fileName = "";
                    for(int i = 2; i < commandParts.length; i++) {
                        fileName += commandParts[i] + " ";
@@ -315,7 +315,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            e.printStackTrace();
                        }
                    } else speak("Имя файла не задано.");
-               } else if(commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("трансляцию")
+               } else if(commandParts.length == 3
+                       && commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("трансляцию")
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if (!screenRecordWorking) {
                        TVStatusChecker tvc = new TVStatusChecker();
@@ -328,7 +329,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            e.printStackTrace();
                        }
 
-                       if (tvc.tvStatus.contains("Соединение установлено")) { // раскомментить, когда будем перекидываться сообщениями
+                       if (tvc.tvStatus.contains("Соединение с " + ipFromAssets + "установлено")) { // раскомментить, когда будем перекидываться сообщениями
                            speak(tvc.tvStatus);
                            screenRecordWorking = true;
 
@@ -341,7 +342,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                    } else {
                        speak("Трансляция экрана уже идёт.");
                    }
-               }  else if(commandParts[0].equalsIgnoreCase("останови") && commandParts[1].equalsIgnoreCase("трансляцию")
+               }  else if(commandParts.length == 3
+                       && commandParts[0].equalsIgnoreCase("останови") && commandParts[1].equalsIgnoreCase("трансляцию")
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if(screenRecordWorking) {
                        dt.working = false;
@@ -350,7 +352,40 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                    } else {
                        speak("Трансляция экрана не запущена.");
                    }
-               }
+               } else if(commandParts.length >= 2 &&
+                       commandParts[0].equalsIgnoreCase("установи") && commandParts[1].equalsIgnoreCase("адрес")) { // диктовать через точки, убирать пробелы между точками
+                   if(suggestedCommand.length() > 15) {
+                       String newIp = suggestedCommand.substring(15);
+                       newIp = newIp.replaceAll(" ", ""); // удаляем пробелы из продиктованной речи
+                       String[] ipParts = newIp.split("\\.");
+                       /*String ipTest = ""; // тест сплита
+                       for(int t = 0; t < ipParts.length; t++) {
+                           ipTest += ipParts[t] + " ";
+                       }
+                       Log.d("IPRES", ipTest);*/
+                       if(ipParts.length == 4) {
+                           String ipToWrite = " ";
+                           int i;
+                           for(i = 0; i < 4; i++) {
+                               try {
+                                   int ipNumber = Integer.parseInt(ipParts[i]);
+                                   if(ipNumber < 0 || ipNumber > 255) {
+                                       speak("Часть  " + ipParts[i] + " должна быть не меньше нуля и не больше 255.");
+                                       break;
+                                   } else {
+                                       ipToWrite += ipParts[i] + (i != 3 ? "." : ""); // к последней части точку не добавляем
+                                   }
+                               } catch (NumberFormatException e) {
+                                   speak("Часть адреса " + ipParts[i] + "не число.");
+                                   break;
+                               }
+                           } if (i == 4) {
+                               speak("Новый IP-адрес: " + ipToWrite);
+                               // записать
+                           }
+                       } else speak("IP-адрес задан не полностью.");
+                   } else speak("Продиктуйте новый IP-адрес.");
+               } else speak("Команды " + suggestedCommand + " не существует.");
             }
         }
 
