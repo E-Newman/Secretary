@@ -39,8 +39,14 @@ import com.vk.api.sdk.auth.VKScope;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -139,21 +145,32 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
 
-        // читаем IP из файла ресурса
-        Resources ipResources = getResources();
-        AssetManager ipManager = ipResources.getAssets();
-        InputStream ipis;
-        Properties ipProp = null;
-
+        // читаем ip из файла в папке приложения, т.к. в ассеты потом нельзя будет записать
         try {
-            ipis = getApplicationContext().getAssets().open("ip");
-            ipProp = new Properties();
-            ipProp.load(ipis);
-            ipFromAssets = ipProp.getProperty("IP");
+            File ipFile = new File(packageManager.getApplicationInfo(getPackageName(), 0).dataDir + "/ip");
+            if (!ipFile.exists()) {
+                try {
+                    if (ipFile.createNewFile()) {
+                        Log.d("IPRES", "Created in IP");
+                        BufferedWriter ipbw = new BufferedWriter(new FileWriter(ipFile));
+                        ipbw.write("192.168.0.100");
+                        ipbw.close();
+                        Toast.makeText(this,"Создан новый файл для IP-адреса с адресом 192.168.0.100.", Toast.LENGTH_LONG).show(); // тост, т.к. в начале не говорит
+                    } else Log.e("IPRES", "File create issues in IP");
+                } catch (Exception e) {
+                    Log.d("IPRES", e.getMessage());
+                }
+            }
+
+            BufferedReader ipbr = new BufferedReader(new FileReader(ipFile));
+            String ipline = "";
+            while((ipline = ipbr.readLine()) != null) {
+                ipFromAssets += ipline;
+            }
+            ipbr.close();
             Log.d("IPRES", ipFromAssets);
-        } catch (Exception e) {
+        } catch (Exception e) { // если нет файла с ip, создаём стандартный
             Log.d("IPRES", e.getMessage());
-            //e.printStackTrace();
         }
 
         Intent captureIntent = mediaProjectionManager.createScreenCaptureIntent();
@@ -329,7 +346,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            e.printStackTrace();
                        }
 
-                       if (tvc.tvStatus.contains("Соединение с " + ipFromAssets + "установлено")) { // раскомментить, когда будем перекидываться сообщениями
+                       if (tvc.tvStatus.contains("Соединение с " + ipFromAssets + " установлено")) { // раскомментить, когда будем перекидываться сообщениями
                            speak(tvc.tvStatus);
                            screenRecordWorking = true;
 
@@ -358,11 +375,6 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        String newIp = suggestedCommand.substring(15);
                        newIp = newIp.replaceAll(" ", ""); // удаляем пробелы из продиктованной речи
                        String[] ipParts = newIp.split("\\.");
-                       /*String ipTest = ""; // тест сплита
-                       for(int t = 0; t < ipParts.length; t++) {
-                           ipTest += ipParts[t] + " ";
-                       }
-                       Log.d("IPRES", ipTest);*/
                        if(ipParts.length == 4) {
                            String ipToWrite = " ";
                            int i;
@@ -380,8 +392,17 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                    break;
                                }
                            } if (i == 4) {
-                               speak("Новый IP-адрес: " + ipToWrite);
-                               // записать
+                               try {
+                                   File ipFile = new File(getPackageManager().getApplicationInfo(getPackageName(), 0).dataDir + "/ip");
+                                   BufferedWriter ipbw = new BufferedWriter(new FileWriter(ipFile));
+                                   ipbw.write(ipToWrite.substring(1));
+                                   ipbw.close();
+                                   ipFromAssets = ipToWrite;
+                                   speak("Новый IP-адрес: " + ipFromAssets);
+                               } catch (Exception e) {
+                                   Log.d("IPRES", e.getMessage());
+                                   //e.printStackTrace();
+                               }
                            }
                        } else speak("IP-адрес задан не полностью.");
                    } else speak("Продиктуйте новый IP-адрес.");

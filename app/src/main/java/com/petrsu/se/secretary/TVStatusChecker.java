@@ -95,7 +95,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             return -7;
         }
 
-        tvStatus = "Соединение установлено";
+        tvStatus = "Соединение с " + addria + " установлено";
         Log.i("FILELEN", "1" + tvStatus);
         return 0;
     }
