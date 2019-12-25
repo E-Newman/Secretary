@@ -52,11 +52,15 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         stopPack = new byte[9];
 
+        Log.d("START_TWICE", "Record scheduled");
+
         try {
-            Thread.sleep(3000); // freeze to write some video
+            Thread.sleep(5000); // freeze to write some video
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Log.d("START_TWICE", "1st part ready");
 
         sendTimer.schedule(sendTask, 0, 5000); // TODO: find optimal vid length
 
@@ -104,27 +108,28 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 e.printStackTrace();
             }
             if (working) {
-                    screenRecorder.stopRecord();
-                    videoBytes = new byte[(int) len];
-                    FileInputStream fis = null;
-                    try {
-                        fis = new FileInputStream(sendFile);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Log.d("RECORDED", "Yeee");
-                    try {
-                        Log.d("DOWNLOADFILE", "Длина файла " + len);
-                        Log.d("DOWNLOADFILE", "Длина массива " + videoBytes.length);
-                        if (sendFile.exists()) {
-                            fis.read(videoBytes);
-                            dos.writeLong(videoBytes.length);
-                            dos.write(videoBytes, 0, videoBytes.length);
-                        } else Log.e("FILE", "Not found");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    screenRecorder.startRecord();
+                screenRecorder.stopRecord();
+                videoBytes = new byte[(int) len];
+                FileInputStream fis = null;
+                try {
+                    fis = new FileInputStream(sendFile);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Log.d("START_TWICE", "Recorded a file");
+                try {
+                    Log.d("DOWNLOADFILE", "Длина файла " + len);
+                    Log.d("DOWNLOADFILE", "Длина массива " + videoBytes.length);
+                    if (sendFile.exists()) {
+                        fis.read(videoBytes);
+                        dos.writeLong(videoBytes.length);
+                        dos.write(videoBytes, 0, videoBytes.length);
+                        Log.d("START_TWICE", "Record sent");
+                    } else Log.e("FILE", "Not found");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                screenRecorder.startRecord();
             } else {
                 try {
                     dos.writeLong(-11);
@@ -132,7 +137,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                     e.printStackTrace();
                 }
                 sendTimer.cancel();
-                Log.i("FILELEN", "finish by user");
+                Log.i("START_TWICE", "Record finish by user");
             }
         }
     }

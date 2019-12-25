@@ -336,6 +336,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        && commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("трансляцию")
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if (!screenRecordWorking) {
+                       Log.d("START_TWICE", "Checking TV status...");
                        TVStatusChecker tvc = new TVStatusChecker();
                        tvc.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,ipFromAssets);
 
@@ -346,13 +347,15 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            e.printStackTrace();
                        }
 
-                       if (tvc.tvStatus.contains("Соединение с " + ipFromAssets + " установлено")) { // раскомментить, когда будем перекидываться сообщениями
+                       if (tvc.tvStatus.contains("Соединение с " + ipFromAssets + " установлено")) {
+                           Log.d("START_TWICE", "TV status success");
                            speak(tvc.tvStatus);
                            screenRecordWorking = true;
 
                            screenRecorder.startRecord();
+                           Log.d("START_TWICE", "Record start success");
                            dt = new DataTransfer(screenRecorder);
-                           dt.execute(ipFromAssets);
+                           dt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ipFromAssets);
                        } else {
                            speak(tvc.tvStatus);
                        }
