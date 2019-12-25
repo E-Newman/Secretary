@@ -137,6 +137,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                     e.printStackTrace();
                 }
                 sendTimer.cancel();
+                timerRunning = false; // не завершалось без этого
                 Log.i("START_TWICE", "Record finish by user");
             }
         }

@@ -305,6 +305,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        VkMessageRequest vmr = new VkMessageRequest();
                        vmr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, messageToSend);
                        speak( "Сообщение " + messageToSend + " отправлено.");
+                       //if(!vmr.isCancelled()) vmr.cancel(true);
                    } else speak("Сообщение не задано.");
                } else if(commandParts.length >= 2
                     && commandParts[0].equalsIgnoreCase("найди") && commandParts[1].equalsIgnoreCase("документ")) {
@@ -331,6 +332,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        } catch (Exception e) {
                            e.printStackTrace();
                        }
+                       if(!vfr.isCancelled())vfr.cancel(true);
                    } else speak("Имя файла не задано.");
                } else if(commandParts.length == 3
                        && commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("трансляцию")
@@ -341,7 +343,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        tvc.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,ipFromAssets);
 
                        try {
-                           Thread.sleep(3000);
+                           Thread.sleep(1000);
                        } catch (Exception e) {
                            speak(tvc.tvStatus);
                            e.printStackTrace();
@@ -359,6 +361,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        } else {
                            speak(tvc.tvStatus);
                        }
+
+                       if(!tvc.isCancelled())tvc.cancel(true);
                    } else {
                        speak("Трансляция экрана уже идёт.");
                    }
@@ -367,6 +371,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if(screenRecordWorking) {
                        dt.working = false;
+                       if(!dt.isCancelled())dt.cancel(true);
                        screenRecordWorking = false;
                        speak("Трансляция остановлена.");
                    } else {
