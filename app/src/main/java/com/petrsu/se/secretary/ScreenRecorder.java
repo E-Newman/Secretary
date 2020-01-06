@@ -95,7 +95,7 @@ public class ScreenRecorder extends Service {
         mediaRecorder.setVideoSize(dWidth, dHeight);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setVideoEncodingBitRate(2 * 1024 * 1024);
-        mediaRecorder.setVideoFrameRate(30);
+        mediaRecorder.setVideoFrameRate(20);
         try {
             mediaRecorder.prepare();
         } catch (IOException e) {

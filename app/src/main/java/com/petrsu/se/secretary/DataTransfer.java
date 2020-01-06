@@ -101,21 +101,25 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         public void run() {
             File sendFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record.mp4");
             long len = sendFile.length();
+            FileInputStream fis = null;
             DataOutputStream dos = null;
+
+            try {
+                fis = new FileInputStream(sendFile);
+            } catch (Exception e) {
+                Log.d("START_TWICE", e.getMessage());
+                e.printStackTrace();
+            }
             try {
                 dos = new DataOutputStream(sock.getOutputStream());
             } catch (IOException e) {
+                Log.d("START_TWICE", e.getMessage());
                 e.printStackTrace();
             }
+
             if (working) {
                 screenRecorder.stopRecord();
                 videoBytes = new byte[(int) len];
-                FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(sendFile);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 Log.d("START_TWICE", "Recorded a file");
                 try {
                     Log.d("DOWNLOADFILE", "Длина файла " + len);
@@ -127,12 +131,24 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                         Log.d("START_TWICE", "Record sent");
                     } else Log.e("FILE", "Not found");
                 } catch (Exception e) {
+                    Log.d("START_TWICE", e.getMessage());
+                    e.printStackTrace();
+                }
+                try {
+                    fis.close();
+                    //dos.close();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 screenRecorder.startRecord();
             } else {
                 try {
                     dos.writeLong(-11);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    dos.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

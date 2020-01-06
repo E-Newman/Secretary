@@ -335,7 +335,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        if(!vfr.isCancelled())vfr.cancel(true);
                    } else speak("Имя файла не задано.");
                } else if(commandParts.length == 3
-                       && commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("трансляцию")
+                       && commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("демонстрацию")
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if (!screenRecordWorking) {
                        Log.d("START_TWICE", "Checking TV status...");
@@ -364,18 +364,18 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
                        if(!tvc.isCancelled())tvc.cancel(true);
                    } else {
-                       speak("Трансляция экрана уже идёт.");
+                       speak("Демонстрация экрана уже идёт.");
                    }
                }  else if(commandParts.length == 3
-                       && commandParts[0].equalsIgnoreCase("останови") && commandParts[1].equalsIgnoreCase("трансляцию")
+                       && commandParts[0].equalsIgnoreCase("останови") && commandParts[1].equalsIgnoreCase("демонстрацию")
                        && commandParts[2].equalsIgnoreCase("экрана")) {
                    if(screenRecordWorking) {
                        dt.working = false;
                        if(!dt.isCancelled())dt.cancel(true);
                        screenRecordWorking = false;
-                       speak("Трансляция остановлена.");
+                       speak("Демонстрация остановлена.");
                    } else {
-                       speak("Трансляция экрана не запущена.");
+                       speak("Демонстрация экрана не запущена.");
                    }
                } else if(commandParts.length >= 2 &&
                        commandParts[0].equalsIgnoreCase("установи") && commandParts[1].equalsIgnoreCase("адрес")) { // диктовать через точки, убирать пробелы между точками
@@ -390,13 +390,13 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                try {
                                    int ipNumber = Integer.parseInt(ipParts[i]);
                                    if(ipNumber < 0 || ipNumber > 255) {
-                                       speak("Часть  " + ipParts[i] + " должна быть не меньше нуля и не больше 255.");
+                                       speak("Часть  " + ipParts[i] + " должна быть числом не меньше нуля и не больше 255.");
                                        break;
                                    } else {
                                        ipToWrite += ipParts[i] + (i != 3 ? "." : ""); // к последней части точку не добавляем
                                    }
                                } catch (NumberFormatException e) {
-                                   speak("Часть адреса " + ipParts[i] + "не число.");
+                                   speak("Часть  " + ipParts[i] + " должна быть числом не меньше нуля и не больше 255.");
                                    break;
                                }
                            } if (i == 4) {
