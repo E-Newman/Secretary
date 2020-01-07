@@ -100,7 +100,6 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         @Override
         public void run() {
             File sendFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/record.mp4");
-            long len = sendFile.length();
             FileInputStream fis = null;
             DataOutputStream dos = null;
 
@@ -119,10 +118,10 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
             if (working) {
                 screenRecorder.stopRecord();
-                videoBytes = new byte[(int) len];
+                videoBytes = new byte[(int) sendFile.length()];
                 Log.d("START_TWICE", "Recorded a file");
                 try {
-                    Log.d("DOWNLOADFILE", "Длина файла " + len);
+                    Log.d("DOWNLOADFILE", "Длина файла " + sendFile.length());
                     Log.d("DOWNLOADFILE", "Длина массива " + videoBytes.length);
                     if (sendFile.exists()) {
                         fis.read(videoBytes);
