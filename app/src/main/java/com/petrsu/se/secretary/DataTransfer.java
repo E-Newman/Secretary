@@ -26,7 +26,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected Integer doInBackground(String... args){
-        Socket sock = null, lsock = null;
+        Socket sock;
         String addria = "";
 
         for (String part : args) {
@@ -48,7 +48,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         }
 
         Timer sendTimer = new Timer();
-        TimerTask sendTask = new sendTask(sock, lsock, ia, sendTimer);
+        TimerTask sendTask = new sendTask(sock, ia, sendTimer);
 
         stopPack = new byte[9];
 
@@ -84,14 +84,13 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
     }
 
     private class sendTask extends TimerTask {
-        Socket sock, lsock;
+        Socket sock;
         InetAddress ia;
         Timer sendTimer;
         byte[] videoBytes;
 
-        public sendTask(Socket sock, Socket lsock, InetAddress ia, Timer sendTimer) {
+        public sendTask(Socket sock, InetAddress ia, Timer sendTimer) {
             this.sock = sock;
-            this.lsock = lsock;
             this.ia = ia;
             this.sendTimer = sendTimer;
             timerRunning = true;
@@ -135,7 +134,6 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 }
                 try {
                     fis.close();
-                    //dos.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

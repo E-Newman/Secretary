@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
@@ -42,19 +40,19 @@ import org.jetbrains.annotations.NotNull;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DialogActivity extends AppCompatActivity implements View.OnClickListener {
+import edu.cmu.pocketsphinx.*;
+
+public class DialogActivity extends AppCompatActivity implements View.OnClickListener, edu.cmu.pocketsphinx.RecognitionListener {
     private static final int VR_REQUEST = 999;
     private static final int STORAGE_REQUEST_CODE = 102;
     private static final int RECORD_REQUEST_CODE = 103;
@@ -69,6 +67,14 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
     private DataTransfer dt = null;
     private String ipFromAssets = "";
 
+    // sphinx
+    private static final String KWS_SEARCH = "wakeup";
+    private static final String MENU_SEARCH = "menu";
+    private static final String KEYPHRASE = "oh mighty computer";
+    private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+
+    private SpeechRecognizer recognizer;
+
     public void speak(String text) {
         repeatTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, String.valueOf(System.currentTimeMillis()));
     }
@@ -77,6 +83,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dialog);
+        // инициализация pocketsphinx
+        new SetupTask(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         speakButton = (Button) findViewById(R.id.speakButton);
         //проверяем, поддерживается ли распознавание речи
         PackageManager packManager = getPackageManager();
@@ -111,6 +119,9 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         }
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CALL_PHONE }, 121);
+        }
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.RECORD_AUDIO }, PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
         // авторизуемся в вк для работы с документами
@@ -183,6 +194,112 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
     protected void onDestroy() {
         super.onDestroy();
         unbindService(connection);
+    }
+
+    private static class SetupTask extends AsyncTask<Void, Void, Exception> {
+        WeakReference<DialogActivity> activityReference;
+
+        SetupTask(DialogActivity activity) {
+            this.activityReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected Exception doInBackground(Void... params) {
+            try {
+                Assets assets = new Assets(activityReference.get());
+                File assetDir = assets.syncAssets();
+                activityReference.get().setupRecognizer(assetDir);
+            } catch (Exception e) {
+                Log.d("SPHINX", e.getMessage());
+                return e;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Exception result) {
+            if (result != null) {
+                Log.d("SPHINX", result.getMessage());
+            } else {
+                Log.d("SPHINX", "async setup is ok");
+                activityReference.get().switchSearch(KWS_SEARCH);
+            }
+        }
+    }
+
+    private void setupRecognizer(File assetsDir) throws IOException {
+        recognizer = SpeechRecognizerSetup.defaultSetup()
+                .setAcousticModel(new File(assetsDir, "en-us-ptm"))
+                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
+                .setRawLogDir(assetsDir)
+                .getRecognizer();
+        recognizer.addListener(this);
+        // Create keyword-activation search.
+        recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
+        // Create your custom grammar-based search
+        //File menuGrammar = new File(assetsDir, "menu.gram");
+        //recognizer.addGrammarSearch(MENU_SEARCH, menuGrammar);
+        Log.d("SPHINX", "Ready");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (recognizer != null) {
+            recognizer.cancel();
+            recognizer.shutdown();
+        }
+    }
+
+    @Override
+    public void onPartialResult(Hypothesis hypothesis) {
+        //Log.d( "SPHINX", hypothesis.getHypstr());
+        if (hypothesis == null)
+            return;
+        String text = hypothesis.getHypstr();
+        if (text.equals(KEYPHRASE))
+            speak("Можно распознавать команду.");
+        else {
+            Log.d( "SPHINX", hypothesis.getHypstr());
+        }
+    }
+
+    @Override
+    public void onResult(Hypothesis hypothesis) {
+        //Log.d( "SPHINX", hypothesis.getHypstr());
+        //Toast.makeText(DialogActivity.this,hypothesis.getHypstr(), Toast.LENGTH_SHORT).show();
+        if (hypothesis != null) {
+            Log.d( "SPHINX", hypothesis.getHypstr());
+        }
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+        Log.d( "SPHINX", "aaa");
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        if (!recognizer.getSearchName().equals(KWS_SEARCH));
+            switchSearch(KWS_SEARCH);
+    }
+
+    private void switchSearch(String searchName) {
+        recognizer.stop();
+        if (searchName.equals(KWS_SEARCH))
+            recognizer.startListening(searchName);
+        else
+            recognizer.startListening(searchName, 1000);
+    }
+
+    @Override
+    public void onError(Exception error) {
+        Log.d("SPHINX", error.getMessage());
+    }
+
+    @Override
+    public void onTimeout() {
+        //switchSearch(KWS_SEARCH);
     }
 
     public void onClick(View view) {
