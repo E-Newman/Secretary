@@ -208,7 +208,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         // проверим авторизацию вк
-        if(!VK.onActivityResult(requestCode, resultCode, data, new VKAuthCallback() {
+        if (!VK.onActivityResult(requestCode, resultCode, data, new VKAuthCallback() {
             @Override
             public void onLogin(@NotNull VKAccessToken vkAccessToken) {
                 currentVkUserToken = vkAccessToken.getAccessToken(); // берём текущий токен для работы с документами от имени пользователя
@@ -217,7 +217,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onLoginFailed(int i) {
-                speak("Ошибка авторизации ВКонтакте, работа с документами недоступна.");
+                speak("Приложение не авторизовано ВКонтакте, работа с документами недоступна.");
             }
         }))
 
@@ -289,7 +289,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                            Intent intent = new Intent(Intent.ACTION_CALL);
                                            intent.setData(Uri.parse("tel:" + Uri.encode(phoneNumber))); // кодирование решётки для ussd
                                            startActivity(intent);
-                                       }
+                                       } else speak("Невозможно позвонить " + contactName + ", такого контакта нет в телефонной книге.");
                                    }
                                } else speak("Вы не разрешили звонить");
                            } else speak("Вы не разрешили использовать телефонную книгу");
