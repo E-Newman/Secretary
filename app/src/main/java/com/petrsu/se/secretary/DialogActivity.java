@@ -309,7 +309,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                    } else speak("Сообщение не задано.");
                } else if(commandParts.length >= 2
                     && commandParts[0].equalsIgnoreCase("найди") && commandParts[1].equalsIgnoreCase("документ")) {
-					// TODO: повторная проверка авторизации!!; к русскоязычным именам гугл приделывает точку
+					// TODO: к русскоязычным именам гугл приделывает точку
                    if(currentVkUserToken != "") { // проверяем, что авторизованы в вк
                        String fileName = "";
                        for (int i = 2; i < commandParts.length; i++) {
@@ -352,6 +352,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            e.printStackTrace();
                        }
 
+                       // TODO: если перестанет коннектиться, возможно, нужно будет обрезать точку
                        if (tvc.tvStatus.contains("Соединение с " + ipFromAssets + " установлено")) {
                            Log.d("START_TWICE", "TV status success");
                            speak(tvc.tvStatus);
@@ -381,7 +382,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                        speak("Демонстрация экрана не запущена.");
                    }
                } else if(commandParts.length >= 2 &&
-                       commandParts[0].equalsIgnoreCase("установи") && commandParts[1].equalsIgnoreCase("адрес")) { // диктовать через точки, убирать пробелы между точками
+                       commandParts[0].equalsIgnoreCase("установи") &&
+                       (commandParts[1].equalsIgnoreCase("адрес") || commandParts[1].equalsIgnoreCase("адрес."))) { // диктовать через точки, убирать пробелы между точками
                    if(suggestedCommand.length() > 15) {
                        String newIp = suggestedCommand.substring(15);
                        newIp = newIp.replaceAll(" ", ""); // удаляем пробелы из продиктованной речи

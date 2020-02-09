@@ -88,8 +88,8 @@
       <file leaf-file-name="DialogActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="384">
-              <caret line="338" column="116" selection-start-line="338" selection-start-column="33" selection-end-line="338" selection-end-column="116" />
+            <state relative-caret-position="120">
+              <caret line="354" column="26" selection-start-line="354" selection-start-column="26" selection-end-line="354" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -2662,6 +2662,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="AndroidView">
         <subPane>
           <expand>
@@ -2673,8 +2675,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane" />
     </panes>
   </component>
@@ -2854,12 +2854,12 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
       <window_info anchor="bottom" id="Android Profiler" order="7" />
-      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49848714" weight="0.32843137" />
+      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4977307" weight="0.32843137" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Build Variants" order="2" side_tool="true" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.13388805" side_tool="true" visible="true" weight="0.14542484" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.13464448" side_tool="true" visible="true" weight="0.29411766" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32843137" />
@@ -2868,7 +2868,8 @@
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14901665" />
-      <window_info active="true" anchor="bottom" id="Build" order="7" sideWeight="0.86611193" visible="true" weight="0.14542484" />
+      <window_info active="true" anchor="bottom" id="Build" order="7" sideWeight="0.86535555" visible="true" weight="0.29411766" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4977307" weight="0.32843137" />
       <window_info anchor="right" id="Gradle" order="3" weight="0.32980332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Device File Explorer" order="3" side_tool="true" />
@@ -2881,7 +2882,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4977307" weight="0.32843137" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -3217,8 +3217,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="338" column="116" selection-start-line="338" selection-start-column="33" selection-end-line="338" selection-end-column="116" />
+        <state relative-caret-position="120">
+          <caret line="354" column="26" selection-start-line="354" selection-start-column="26" selection-end-line="354" selection-end-column="26" />
         </state>
       </provider>
     </entry>
