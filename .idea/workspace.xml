@@ -27,12 +27,10 @@
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -90,8 +88,8 @@
       <file leaf-file-name="DialogActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="355">
-              <caret line="292" column="36" lean-forward="true" selection-start-line="292" selection-start-column="36" selection-end-line="292" selection-end-column="36" />
+            <state relative-caret-position="384">
+              <caret line="338" column="116" selection-start-line="338" selection-start-column="33" selection-end-line="338" selection-end-column="116" />
             </state>
           </provider>
         </entry>
@@ -108,7 +106,7 @@
       <file leaf-file-name="DataTransfer.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DataTransfer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-204">
+            <state relative-caret-position="1836">
               <caret line="121" column="49" selection-start-line="121" selection-start-column="49" selection-end-line="121" selection-end-column="49" />
             </state>
           </provider>
@@ -2664,9 +2662,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane" />
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="AndroidView">
         <subPane>
           <expand>
@@ -2678,6 +2673,9 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2861,7 +2859,7 @@
       <window_info id="Image Layers" order="2" />
       <window_info id="Build Variants" order="2" side_tool="true" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.13313162" side_tool="true" visible="true" weight="0.14542484" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.13388805" side_tool="true" visible="true" weight="0.14542484" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32843137" />
@@ -2870,7 +2868,7 @@
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14901665" />
-      <window_info active="true" anchor="bottom" id="Build" order="7" sideWeight="0.8668684" visible="true" weight="0.14542484" />
+      <window_info active="true" anchor="bottom" id="Build" order="7" sideWeight="0.86611193" visible="true" weight="0.14542484" />
       <window_info anchor="right" id="Gradle" order="3" weight="0.32980332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Device File Explorer" order="3" side_tool="true" />
@@ -3212,15 +3210,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DataTransfer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-204">
+        <state relative-caret-position="1836">
           <caret line="121" column="49" selection-start-line="121" selection-start-column="49" selection-end-line="121" selection-end-column="49" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="355">
-          <caret line="292" column="36" lean-forward="true" selection-start-line="292" selection-start-column="36" selection-end-line="292" selection-end-column="36" />
+        <state relative-caret-position="384">
+          <caret line="338" column="116" selection-start-line="338" selection-start-column="33" selection-end-line="338" selection-end-column="116" />
         </state>
       </provider>
     </entry>

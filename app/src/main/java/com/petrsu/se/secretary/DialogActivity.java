@@ -309,31 +309,34 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                    } else speak("Сообщение не задано.");
                } else if(commandParts.length >= 2
                     && commandParts[0].equalsIgnoreCase("найди") && commandParts[1].equalsIgnoreCase("документ")) {
-                   String fileName = "";
-                   for(int i = 2; i < commandParts.length; i++) {
-                       fileName += commandParts[i] + " ";
-                   }
-                   if(fileName != "") {
-                       VkGetFileRequest vfr = new VkGetFileRequest();
-                       ArrayList<String> docArgs = new ArrayList<>();
-                       docArgs.add(fileName);
-                       docArgs.add(currentVkUserToken);
-                       vfr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, docArgs); // TODO: для асинков проверка кода возврата или типа того
-                       try {
-                           Thread.sleep(3000);
-                           if (vfr.docUrl != "") {
-                               String docUrl = vfr.docUrl;
-                               speak("Файл " + fileName + " найден.");
-                               Intent docOpenIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(docUrl)); // TODO: нормальный выброс url
-                               docOpenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                               docOpenIntent.setPackage("com.android.chrome");
-                               this.startActivity(docOpenIntent);
-                           } else speak("Файл " + fileName + " не найден.");
-                       } catch (Exception e) {
-                           e.printStackTrace();
+					// TODO: повторная проверка авторизации!!; к русскоязычным именам гугл приделывает точку
+                   if(currentVkUserToken != "") { // проверяем, что авторизованы в вк
+                       String fileName = "";
+                       for (int i = 2; i < commandParts.length; i++) {
+                           fileName += commandParts[i] + " ";
                        }
-                       if(!vfr.isCancelled())vfr.cancel(true);
-                   } else speak("Имя файла не задано.");
+                       if (fileName != "") {
+                           VkGetFileRequest vfr = new VkGetFileRequest();
+                           ArrayList<String> docArgs = new ArrayList<>();
+                           docArgs.add(fileName);
+                           docArgs.add(currentVkUserToken);
+                           vfr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, docArgs); // TODO: для асинков проверка кода возврата или типа того
+                           try {
+                               Thread.sleep(3000);
+                               if (vfr.docUrl != "") {
+                                   String docUrl = vfr.docUrl;
+                                   speak("Файл " + fileName + " найден.");
+                                   Intent docOpenIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(docUrl)); // TODO: нормальный выброс url
+                                   docOpenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                   docOpenIntent.setPackage("com.android.chrome");
+                                   this.startActivity(docOpenIntent);
+                               } else speak("Файл " + fileName + " не найден.");
+                           } catch (Exception e) {
+                               e.printStackTrace();
+                           }
+                           if (!vfr.isCancelled()) vfr.cancel(true);
+                       } else speak("Имя файла не задано.");
+                   } else speak("Чтобы работать с документами, перезапустите приложение и авторизуйте его ВКонтакте.");
                } else if(commandParts.length == 3
                        && commandParts[0].equalsIgnoreCase("запусти") && commandParts[1].equalsIgnoreCase("демонстрацию")
                        && commandParts[2].equalsIgnoreCase("экрана")) {
