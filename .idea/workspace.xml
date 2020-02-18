@@ -6,8 +6,8 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="PHONEBOOK" />
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="debug" />
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="TVSOCKET" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="error" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No Filters" />
   </component>
   <component name="AutomaticModuleUnloader">
@@ -31,6 +31,7 @@
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/TVStatusChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/TVStatusChecker.java" afterDir="false" />
     </list>
@@ -86,20 +87,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="DialogActivity.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DialogActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="247" column="90" selection-start-line="247" selection-start-column="90" selection-end-line="247" selection-end-column="90" />
+            <state relative-caret-position="255">
+              <caret line="424" selection-start-line="424" selection-end-line="424" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TVStatusChecker.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="TVStatusChecker.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/TVStatusChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1564">
-              <caret line="97" column="45" selection-start-line="97" selection-start-column="45" selection-end-line="97" selection-end-column="45" />
+            <state relative-caret-position="204">
+              <caret line="29" column="22" lean-forward="true" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -2645,14 +2646,14 @@
         <option value="$PROJECT_DIR$/app/src/main/assets/ipaddress" />
         <option value="$PROJECT_DIR$/app/src/main/assets/ip" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/ip" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/TVStatusChecker.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/ScreenRecorder.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DataTransfer.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/TVStatusChecker.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-10" />
     <option name="y" value="-10" />
     <option name="width" value="1385" />
@@ -2675,8 +2676,8 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2852,8 +2853,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
       <window_info anchor="bottom" id="Android Profiler" order="7" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4977307" weight="0.32843137" />
@@ -2861,21 +2861,21 @@
       <window_info id="Image Layers" order="2" />
       <window_info id="Build Variants" order="2" side_tool="true" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.13161875" side_tool="true" visible="true" weight="0.32843137" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.13313162" side_tool="true" visible="true" weight="0.32843137" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32843137" />
-      <window_info active="true" anchor="bottom" id="Logcat" order="7" sideWeight="0.86838126" visible="true" weight="0.32843137" />
+      <window_info active="true" anchor="bottom" id="Logcat" order="7" sideWeight="0.8668684" visible="true" weight="0.32843137" />
       <window_info id="Captures" order="2" weight="0.25" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14901665" />
-      <window_info anchor="bottom" id="Build" order="7" sideWeight="0.86535555" weight="0.29411766" />
+      <window_info anchor="bottom" id="Build" order="7" sideWeight="0.8645991" weight="0.29411766" />
       <window_info anchor="right" id="Gradle" order="3" weight="0.32980332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49092284" weight="0.39869282" />
       <window_info anchor="right" id="Device File Explorer" order="3" side_tool="true" />
       <window_info anchor="right" id="Theme Preview" order="3" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49092284" weight="0.39869282" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -3196,13 +3196,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/TVStatusChecker.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1564">
-          <caret line="97" column="45" selection-start-line="97" selection-start-column="45" selection-end-line="97" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/ScreenRecorder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1258">
@@ -3219,8 +3212,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/DialogActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="247" column="90" selection-start-line="247" selection-start-column="90" selection-end-line="247" selection-end-column="90" />
+        <state relative-caret-position="255">
+          <caret line="424" selection-start-line="424" selection-end-line="424" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/secretary/TVStatusChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="29" column="22" lean-forward="true" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="22" />
         </state>
       </provider>
     </entry>

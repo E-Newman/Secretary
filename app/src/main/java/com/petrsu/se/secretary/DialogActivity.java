@@ -417,7 +417,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                    //e.printStackTrace();
                                }
                            }
-                       } else speak("IP-адрес задан не полностью.");
+                       } else speak(ipParts.length < 4 ? "IP-адрес задан не полностью." : "IP-адрес должен состоять только из четырёх чисел.");
                    } else speak("Продиктуйте новый IP-адрес.");
                } else speak("Команды " + suggestedCommand + " не существует.");
             }

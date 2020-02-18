@@ -8,7 +8,7 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 
 class TVStatusChecker extends AsyncTask<String, Void, Integer> {
-    public String tvStatus = "Неизвестная ошибка";
+    public String tvStatus = "Не удалось получить ответ"; // в идеале проверить, почему иногда не создаётся сокет
 
     @Override
     protected Integer doInBackground(String... args){
@@ -25,7 +25,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             dos = new DataOutputStream(controlSock.getOutputStream());
             dis = new DataInputStream(controlSock.getInputStream());
         } catch (Exception e) {
-            Log.e("FATAL","Failed to create the socket");
+            Log.e("TVSOCKET",e.getMessage());
             tvStatus = "Не удалось создать сокет";
             return -2;
         }
