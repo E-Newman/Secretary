@@ -239,12 +239,13 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                                if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                                    boolean contactFound = false;
+                                   Log.d("PHONEBOOK", contactName);
                                    String[] contactNameWords = contactName.split(" ");
                                    String contactPatternString = "";
-                                   for(int i = 0; i < contactNameWords.length; i++) {
-                                       if(i != contactNameWords.length - 1) {
-                                           contactPatternString += contactNameWords[i].substring(0, contactNameWords[i].length() - 2) + ". ";
-                                       } else contactPatternString += contactNameWords[i].substring(0, contactNameWords[i].length() - 4) + ".{3}"; // фамилий на -ский/-ская
+                                   for (int i = 0; i < contactNameWords.length; i++) {
+                                       if(contactNameWords[i].length() > 1) {
+                                           contactPatternString += contactNameWords[i].substring(0, contactNameWords[i].length() - 2) + ".+";
+                                       } else contactPatternString += contactNameWords[i];
                                    }
                                    Log.d("PHONEBOOK", contactPatternString);
                                    Pattern namePattern = Pattern.compile(contactPatternString, Pattern.CASE_INSENSITIVE);
@@ -265,7 +266,6 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                        while (cursor.moveToNext()) {
                                            String contactId = cursor.getString(cursor.getColumnIndex(Id));
                                            String nameInBook = cursor.getString(cursor.getColumnIndex(DisplayName));
-                                           Log.d("PHONEBOOK", nameInBook);
                                            Matcher m = namePattern.matcher(nameInBook);
                                            if (m.matches()) {
                                                int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(HasPhoneNumber)));

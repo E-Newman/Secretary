@@ -82,7 +82,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             }
         } catch (Exception e) {
             Log.e("FATAL","Failed to receive datagram");
-            tvStatus = "Не удалось получить ответ от телевизора";
+            tvStatus = "Не удалось получить ответ";
             return -6;
 
         }
