@@ -20,6 +20,8 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             addria += part;
         }
 
+        Log.e("TVSOCKET", addria);
+
         try {
             controlSock = new Socket(addria,11110);
             dos = new DataOutputStream(controlSock.getOutputStream());

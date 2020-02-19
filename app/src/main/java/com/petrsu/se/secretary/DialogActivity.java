@@ -406,9 +406,16 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                                }
                            } if (i == 4) {
                                try {
+                                   //if(ipToWrite.startsWith(" "))
+                                       //ipToWrite = ipToWrite.substring(0, ipToWrite.length()); // google tts прикрепляет пробел в начало, удаляем его
+
+                                   // Log.e("TVSOCKET", "IP:" + ipToWrite);
+                                   while(ipToWrite.startsWith(" ")) ipToWrite = ipToWrite.substring(1);
+                                   // Log.e("TVSOCKET", "Fixed IP:" + ipToWrite);
+
                                    File ipFile = new File(getPackageManager().getApplicationInfo(getPackageName(), 0).dataDir + "/ip");
                                    BufferedWriter ipbw = new BufferedWriter(new FileWriter(ipFile));
-                                   ipbw.write(ipToWrite.substring(1));
+                                   ipbw.write(ipToWrite);
                                    ipbw.close();
                                    ipFromAssets = ipToWrite;
                                    speak("Новый IP-адрес: " + ipFromAssets);
